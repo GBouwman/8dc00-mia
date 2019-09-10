@@ -45,9 +45,14 @@ def combining_transforms():
 
     X = util.test_object(1)
 
-    #------------------------------------------------------------------#
-    # TODO: Experiment with combining transformation matrices.
-    #------------------------------------------------------------------#
+    
+    X_combined = (reg.rotate(3*np.pi/5)*reg.shear(0.2, 0.2)*reg.shear(2,8)).dot(X)
+    
+    fig = plt.figure(figsize=(12,5))
+    
+    ax1 = fig.add_subplot(141, xlim=(-4,4), ylim=(-4,4))
+    
+    util.plot_object(ax1,X_combined)
 
 
 def t2h_test():
