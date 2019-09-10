@@ -83,18 +83,23 @@ def arbitrary_rotation():
     Xh = util.c2h(X)
 
     #------------------------------------------------------------------#
-    # TODO: TODO: Perform rotation of the test shape around the first vertex
+    Tlat = util.t2h(reg.identity(), np.array(X[:,0]))
+    Tlat_down = util.t2h(reg.identity(), -np.array(X[:,0]))
+    T_rot = reg.rotate(np.pi/4)
+    
+    T_rot_hom = util.t2h(T_rot,np.array([0,0]))
+    
+    T_tot = Tlat.dot(T_rot_hom).dot(Tlat_down)
+    X_fin = T_tot.dot(Xh)
+    
     #------------------------------------------------------------------#
-
-    X_rot = T.dot(Xh)
 
     fig = plt.figure(figsize=(5,5))
     ax1 = fig.add_subplot(111)
     util.plot_object(ax1, X)
-    util.plot_object(ax1, X_rot)
+    util.plot_object(ax1, X_fin)
     ax1.set_xlim(ax1.get_ylim())
     ax1.grid()
-
 
 # SECTION 2. Image transformation and least squares fitting
 

@@ -7,6 +7,7 @@ from scipy import ndimage
 import registration_util as util
 
 
+print('hello')
 # SECTION 1. Geometrical transformations
 
 
@@ -106,9 +107,9 @@ def image_transform(I, Th,  output_shape=None):
     X = np.concatenate((xx.reshape((1, xx.size)), yy.reshape((1, yy.size))))
     # convert to homogeneous coordinates
     Xh = util.c2h(X)
-
     #------------------------------------------------------------------#
-    # TODO: Perform inverse coordinates mapping.
+    Rev_T = np.linalg.inv(Th)
+    Xt = Rev_T.dot(Xh)
     #------------------------------------------------------------------#
 
     It = ndimage.map_coordinates(I, [Xt[1,:], Xt[0,:]], order=1, mode='constant').reshape(I.shape)
