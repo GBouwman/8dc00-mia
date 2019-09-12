@@ -7,7 +7,7 @@ from scipy import ndimage
 import registration_util as util
 
 
-print('hello')
+
 # SECTION 1. Geometrical transformations
 
 
@@ -127,7 +127,7 @@ def ls_solve(A, b):
     # E - squared error for the optimal solution
 
     #------------------------------------------------------------------#
-    # TODO: Implement the least-squares solution for w.
+    w = (np.linalg.inv(np.transpose(A).dot(A))).dot(np.transpose(A)).dot(b)
     #------------------------------------------------------------------#
 
     # compute the error
@@ -147,7 +147,11 @@ def ls_affine(X, Xm):
     A = np.transpose(Xm)
 
     #------------------------------------------------------------------#
-    # TODO: Implement least-squares fitting of an affine transformation.
+    bx = X[0]
+    by = X[1]
+    Tx, Ex = ls_solve(A,bx)
+    Ty, Ey = ls_solve(A,by)
+    T = np.array([Tx, Ty])
     # Use the ls_solve() function that you have previously implemented.
     #------------------------------------------------------------------#
 

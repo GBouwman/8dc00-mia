@@ -12,18 +12,17 @@ from IPython.display import display, clear_output
 # SECTION 1. Geometrical transformations
 
 def transforms_test():
-
     X = util.test_object(1)
 
-    X_rot = reg.rotate(3*np.pi/4).dot(X)
+    X_rot = reg.rotate(3 * np.pi / 4).dot(X)
     X_shear = reg.shear(0.1, 0.2).dot(X)
     X_reflect = reg.reflect(-1, -1).dot(X)
 
-    fig = plt.figure(figsize=(12,5))
-    ax1 = fig.add_subplot(141, xlim=(-4,4), ylim=(-4,4))
-    ax2 = fig.add_subplot(142, xlim=(-4,4), ylim=(-4,4))
-    ax3 = fig.add_subplot(143, xlim=(-4,4), ylim=(-4,4))
-    ax4 = fig.add_subplot(144, xlim=(-4,4), ylim=(-4,4))
+    fig = plt.figure(figsize=(12, 5))
+    ax1 = fig.add_subplot(141, xlim=(-4, 4), ylim=(-4, 4))
+    ax2 = fig.add_subplot(142, xlim=(-4, 4), ylim=(-4, 4))
+    ax3 = fig.add_subplot(143, xlim=(-4, 4), ylim=(-4, 4))
+    ax4 = fig.add_subplot(144, xlim=(-4, 4), ylim=(-4, 4))
 
     util.plot_object(ax1, X)
     util.plot_object(ax2, X_rot)
@@ -39,24 +38,22 @@ def transforms_test():
     ax2.grid()
     ax3.grid()
     ax4.grid()
-
+    
+    plt.show()
 
 def combining_transforms():
-
     X = util.test_object(1)
 
-    
-    X_combined = (reg.rotate(3*np.pi/5)*reg.shear(0.2, 0.2)*reg.shear(2,8)).dot(X)
-    
-    fig = plt.figure(figsize=(12,5))
-    
-    ax1 = fig.add_subplot(141, xlim=(-4,4), ylim=(-4,4))
-    
-    util.plot_object(ax1,X_combined)
+    X_combined = (reg.rotate(3 * np.pi / 5) * reg.shear(0.2, 0.2) * reg.shear(2, 8)).dot(X)
+
+    fig = plt.figure(figsize=(12, 5))
+
+    ax1 = fig.add_subplot(141, xlim=(-4, 4), ylim=(-4, 4))
+
+    util.plot_object(ax1, X_combined)
 
 
 def t2h_test():
-
     X = util.test_object(1)
     Xh = util.c2h(X)
 
@@ -64,13 +61,13 @@ def t2h_test():
     t = np.array([10, 20])
 
     # rotation matrix
-    T_rot = reg.rotate(np.pi/4)
+    T_rot = reg.rotate(np.pi / 4)
 
     Th = util.t2h(T_rot, t)
 
     X_rot_tran = Th.dot(Xh)
 
-    fig = plt.figure(figsize=(5,5))
+    fig = plt.figure(figsize=(5, 5))
     ax1 = fig.add_subplot(111)
     util.plot_object(ax1, X)
     util.plot_object(ax1, X_rot_tran)
@@ -78,52 +75,51 @@ def t2h_test():
 
 
 def arbitrary_rotation():
-
     X = util.test_object(1)
     Xh = util.c2h(X)
 
-    #------------------------------------------------------------------#
-    Tlat = util.t2h(reg.identity(), np.array(X[:,0]))
-    Tlat_down = util.t2h(reg.identity(), -np.array(X[:,0]))
-    T_rot = reg.rotate(np.pi/4)
-    
-    T_rot_hom = util.t2h(T_rot,np.array([0,0]))
-    
+    # ------------------------------------------------------------------#
+    Tlat = util.t2h(reg.identity(), np.array(X[:, 0]))
+    Tlat_down = util.t2h(reg.identity(), -np.array(X[:, 0]))
+    T_rot = reg.rotate(np.pi / 4)
+
+    T_rot_hom = util.t2h(T_rot, np.array([0, 0]))
+
     T_tot = Tlat.dot(T_rot_hom).dot(Tlat_down)
     X_fin = T_tot.dot(Xh)
-    
-    #------------------------------------------------------------------#
 
-    fig = plt.figure(figsize=(5,5))
+    # ------------------------------------------------------------------#
+
+    fig = plt.figure(figsize=(5, 5))
     ax1 = fig.add_subplot(111)
     util.plot_object(ax1, X)
     util.plot_object(ax1, X_fin)
     ax1.set_xlim(ax1.get_ylim())
     ax1.grid()
 
+
 # SECTION 2. Image transformation and least squares fitting
 
 def image_transform_test():
-
     I = plt.imread('../data/cameraman.tif')
 
     # 45 deg. rotation around the image center
-    T_1 = util.t2h(reg.identity(), 128*np.ones(2))
-    T_2 = util.t2h(reg.rotate(np.pi/4), np.zeros(2))
-    T_3 = util.t2h(reg.identity(), -128*np.ones(2))
+    T_1 = util.t2h(reg.identity(), 128 * np.ones(2))
+    T_2 = util.t2h(reg.rotate(np.pi / 4), np.zeros(2))
+    T_3 = util.t2h(reg.identity(), -128 * np.ones(2))
     T_rot = T_1.dot(T_2).dot(T_3)
 
     # 45 deg. rotation around the image center followed by shearing
     T_shear = util.t2h(reg.shear(0.0, 0.5), np.zeros(2)).dot(T_rot)
 
     # scaling in the x direction and translation
-    T_scale = util.t2h(reg.scale(1.5, 1), np.array([10,20]))
+    T_scale = util.t2h(reg.scale(1.5, 1), np.array([10, 20]))
 
     It1, Xt1 = reg.image_transform(I, T_rot)
     It2, Xt2 = reg.image_transform(I, T_shear)
     It3, Xt3 = reg.image_transform(I, T_scale)
 
-    fig = plt.figure(figsize=(12,5))
+    fig = plt.figure(figsize=(12, 5))
 
     ax1 = fig.add_subplot(131)
     im11 = ax1.imshow(I)
@@ -143,21 +139,22 @@ def image_transform_test():
 
 
 def ls_solve_test():
-    #------------------------------------------------------------------#
-    # TODO: Test your implementation of the ls_solve definition
-    # remove the 'pass' once implemented
-    pass
-    #------------------------------------------------------------------#
+    # ------------------------------------------------------------------#
+    A = np.array([[3,4],[5,6],[7,8],[17,10]])
+    b = np.array([[1],[2],[3],[4]])
+    w, E = reg.ls_solve(A, b)
+
+    return w, E
+    # ------------------------------------------------------------------#
 
 
 def ls_affine_test():
-
     X = util.test_object(1)
 
     # convert to homogeneous coordinates
     Xh = util.c2h(X)
 
-    T_rot = reg.rotate(np.pi/4)
+    T_rot = reg.rotate(np.pi / 4)
     T_scale = reg.scale(1.2, 0.9)
     T_shear = reg.shear(0.2, 0.1)
 
@@ -169,7 +166,7 @@ def ls_affine_test():
 
     Xmt = Te.dot(Xm);
 
-    fig = plt.figure(figsize=(12,5))
+    fig = plt.figure(figsize=(12, 5))
 
     ax1 = fig.add_subplot(131)
     ax2 = fig.add_subplot(132)
@@ -191,39 +188,36 @@ def ls_affine_test():
 # SECTION 3. Image similarity metrics
 
 def correlation_test():
-
     I = plt.imread('../data/cameraman.tif')
-    Th = util.t2h(reg.identity(), np.array([10,20]))
+    Th = util.t2h(reg.identity(), np.array([10, 20]))
     J, _ = reg.image_transform(I, Th)
 
     C1 = reg.correlation(I, I)
     # the self correlation should be very close to 1
     assert abs(C1 - 1) < 10e-10, "Correlation function is incorrectly implemented (self correlation test)"
 
-    #------------------------------------------------------------------#
+    # ------------------------------------------------------------------#
     # TODO: Implement a few more tests of the correlation definition
-    #------------------------------------------------------------------#
+    # ------------------------------------------------------------------#
 
     print('Test successful!')
 
 
 def mutual_information_test():
-
     I = plt.imread('../data/cameraman.tif')
 
     # mutual information of an image with itself
     p1 = reg.joint_histogram(I, I)
     MI1 = reg.mutual_information(p1)
 
-    #------------------------------------------------------------------#
+    # ------------------------------------------------------------------#
     # TODO: Implement a few tests of the mutual_information definition
-    #------------------------------------------------------------------#
+    # ------------------------------------------------------------------#
 
     print('Test successful!')
 
 
 def mutual_information_e_test():
-
     I = plt.imread('../data/cameraman.tif')
 
     N1 = np.random.randint(255, size=(512, 512))
@@ -233,7 +227,8 @@ def mutual_information_e_test():
     p1 = reg.joint_histogram(I, I)
     MI1 = reg.mutual_information_e(p1)
     MI2 = reg.mutual_information(p1)
-    assert abs(MI1-MI2) < 10e-3, "Mutual information function with entropy is incorrectly implemented (difference with reference implementation test)"
+    assert abs(
+        MI1 - MI2) < 10e-3, "Mutual information function with entropy is incorrectly implemented (difference with reference implementation test)"
 
     print('Test successful!')
 
@@ -241,21 +236,19 @@ def mutual_information_e_test():
 # SECTION 4. Towards intensity-based image registration
 
 def ngradient_test():
-
     # NOTE: test function not strictly scalar-valued
     exponential = lambda x: np.exp(x)
     g1 = reg.ngradient(exponential, np.ones((1,)))
     assert abs(g1 - exponential(1)) < 1e-5, "Numerical gradient is incorrectly implemented (exponential test)"
 
-    #------------------------------------------------------------------#
+    # ------------------------------------------------------------------#
     # TODO: Implement a few more test cases of ngradient
-    #------------------------------------------------------------------#
+    # ------------------------------------------------------------------#
 
     print('Test successful!')
 
 
 def registration_metrics_demo(use_t2=False):
-
     # read a T1 image
     I = plt.imread('../data/t1_demo.tif')
 
@@ -271,7 +264,7 @@ def registration_metrics_demo(use_t2=False):
     MI = np.full(angles.shape, np.nan)
 
     # visualization
-    fig = plt.figure(figsize=(14,6))
+    fig = plt.figure(figsize=(14, 6))
 
     # correlation
     ax1 = fig.add_subplot(131, xlim=(-np.pi, np.pi), ylim=(-1.1, 1.1))
@@ -281,7 +274,7 @@ def registration_metrics_demo(use_t2=False):
     ax1.grid()
 
     # mutual mutual_information
-    ax2  = fig.add_subplot(132, xlim=(-np.pi, np.pi), ylim=(0, 2))
+    ax2 = fig.add_subplot(132, xlim=(-np.pi, np.pi), ylim=(0, 2))
     line2, = ax2.plot(angles, MI, lw=2)
     ax2.set_xlabel('Rotation angle')
     ax2.set_ylabel('Mutual information')
@@ -293,7 +286,7 @@ def registration_metrics_demo(use_t2=False):
     im2 = ax3.imshow(I, alpha=0.7)
 
     # used for rotation around image center
-    t = np.array([I.shape[0], I.shape[1]])/2 + 0.5
+    t = np.array([I.shape[0], I.shape[1]]) / 2 + 0.5
     T_1 = util.t2h(reg.identity(), t)
     T_3 = util.t2h(reg.identity(), -t)
 
@@ -317,8 +310,8 @@ def registration_metrics_demo(use_t2=False):
         CC[k] = reg.correlation(I, J)
         MI[k] = reg.mutual_information(p)
 
-        clear_output(wait = True)
-        
+        clear_output(wait=True)
+
         # visualize the results
         line1.set_ydata(CC)
         line2.set_ydata(MI)
