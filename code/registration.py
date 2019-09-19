@@ -179,11 +179,9 @@ def correlation(I, J):
     u = u - u.mean(keepdims=True)
     v = v - v.mean(keepdims=True)
 
-    #------------------------------------------------------------------#
-    # TODO: Implement the computation of the normalized cross-correlation.
-    # This can be done with a single line of code, but you can use for-loops instead.
-    #------------------------------------------------------------------#
+    CC = (np.transpose(u).dot(v))/(np.sqrt(np.transpose(u).dot(u)).dot(np.sqrt(np.transpose(v).dot(v))))
 
+    
     return CC
 
 
@@ -227,12 +225,7 @@ def joint_histogram(I, J, num_bins=16, minmax_range=None):
     for k in range(n):
         p[I[k], J[k]] = p[I[k], J[k]] + 1
 
-    #------------------------------------------------------------------#
-    # TODO: At this point, p contains the counts of cooccuring
-    # intensities in the two images. You need to implement one final
-    # step to make p take the form of a probability mass function
-    # (p.m.f.).
-    #------------------------------------------------------------------#
+    p[I,J] = p[I,J]/len(I)
 
     return p
 
@@ -256,13 +249,13 @@ def mutual_information(p):
     p_I = p_I.reshape(-1, 1)
     p_J = np.sum(p, axis=0)
     p_J = p_J.reshape(1, -1)
-
+    
+    n = len(p_I)
+    MI = 0
     #------------------------------------------------------------------#
-    # TODO: Implement the computation of the mutual information from p,
-    # p_I and p_J. This can be done with a single line of code, but you
-    # can use a for-loop instead.
-    # HINT: p_I is a column-vector and p_J is a row-vector so their
-    # product is a matrix. You can also use the sum() function here.
+    for i in range(n):
+        for j in range(n):
+            MI = MI + p[i, j]*np.log(p[i,j]/(p_I[i,0]*p_J[0,j]))
     #------------------------------------------------------------------#
 
     return MI
@@ -290,8 +283,14 @@ def mutual_information_e(p):
     p_J = p_J.reshape(1, -1)
 
     #------------------------------------------------------------------#
-    # TODO: Implement the computation of the mutual information via
-    # computation of entropy.
+    un = np.unique(p)
+    un = un[1:]
+    
+    entropy1 = -sum(p_I*np.log(p_I))
+    entropy2 = -sum(np.transpose(p_J)*np.log(np.transpose(p_J)))
+    jointentropy = -sum(un*np.log(un))
+    
+    MI = entropy1 + entropy2 - jointentropy
     #------------------------------------------------------------------#
 
     return MI
@@ -310,11 +309,19 @@ def ngradient(fun, x, h=1e-3):
     # g - vector of partial derivatives (gradient) of fun
 
     #------------------------------------------------------------------#
-    # TODO: Implement the  computation of the partial derivatives of
-    # the function at x with numerical differentiation.
-    # g[k] should store the partial derivative w.r.t. the k-th parameter
-    #------------------------------------------------------------------#
-
+    g = []
+    if len(x) == 1:
+        g = (fun(x+h/2)-fun(x-h/2))/h
+    else:
+        g = np.zeros(len(x))
+        for k in range(len(x)):
+            xp = x.copy()
+            xn = x.copy()
+            value = x[k]
+            xp[k] = value + h/2
+            xn[k] = value - h/2
+            g[k] = (fun(xp)[0]-fun(xn)[0])/h
+            
     return g
 
 
@@ -375,8 +382,17 @@ def affine_corr(I, Im, x):
     NUM_BINS = 64
     SCALING = 100
 
-    #------------------------------------------------------------------#
-    # TODO: Implement the missing functionality
+    T_rot = rotate(x[0])
+    T_scale = scale(x[1],x[2])
+    T_shear = shear(x[3],x[4])
+    
+    T = T_rot.dot(T_scale).dot(T_shear)
+    
+    Th = util.t2h(T, x[5:]*SCALING)
+    
+    Im_t, Xt = image_transform(Im, Th)
+    
+    C = correlation(I, Im_t)
     #------------------------------------------------------------------#
 
     return C, Im_t, Th
@@ -400,8 +416,19 @@ def affine_mi(I, Im, x):
     NUM_BINS = 64
     SCALING = 100
     
-    #------------------------------------------------------------------#
-    # TODO: Implement the missing functionality
+    T_rot = rotate(x[0])
+    T_scale = scale(x[1],x[2])
+    T_shear = shear(x[3],x[4])
+    
+    T = T_rot.dot(T_scale).dot(T_shear)
+    
+    Th = util.t2h(T, x[5:]*SCALING)
+    
+    Im_t, Xt = image_transform(Im, Th)
+    
+    p = joint_histogram(I,Im_t)
+    
+    MI = mutual_information(p)
     #------------------------------------------------------------------#
 
     return MI, Im_t, Th

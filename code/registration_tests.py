@@ -159,11 +159,11 @@ def ls_affine_test():
     T_shear = reg.shear(0.2, 0.1)
 
     T = util.t2h(T_rot.dot(T_scale).dot(T_shear), [10, 20])
-
+    
     Xm = T.dot(Xh)
 
     Te = reg.ls_affine(Xh, Xm)
-
+    
     Xmt = Te.dot(Xm);
 
     fig = plt.figure(figsize=(12, 5))
@@ -195,11 +195,13 @@ def correlation_test():
     C1 = reg.correlation(I, I)
     # the self correlation should be very close to 1
     assert abs(C1 - 1) < 10e-10, "Correlation function is incorrectly implemented (self correlation test)"
-
-    # ------------------------------------------------------------------#
-    # TODO: Implement a few more tests of the correlation definition
-    # ------------------------------------------------------------------#
-
+    
+    inv_lin_tr = np.array([[0,1],[1,0]])
+    T = util.t2h(reg.identity(),np.array([0,0]))
+    K,_ = reg.image_transform(I,T)
+    C2 = reg.correlation(I,K)
+    assert abs(C2-1) < 10e-10, "Correlation function is incorrectly implemented (self correlation test)"
+    
     print('Test successful!')
 
 
