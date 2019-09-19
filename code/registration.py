@@ -146,14 +146,12 @@ def ls_affine(X, Xm):
 
     A = np.transpose(Xm)
 
-    #------------------------------------------------------------------#
     bx = X[0]
     by = X[1]
     Tx, Ex = ls_solve(A,bx)
     Ty, Ey = ls_solve(A,by)
     T = np.array([Tx, Ty])
-    # Use the ls_solve() function that you have previously implemented.
-    #------------------------------------------------------------------#
+
 
     return T
 
@@ -252,11 +250,10 @@ def mutual_information(p):
     
     n = len(p_I)
     MI = 0
-    #------------------------------------------------------------------#
+
     for i in range(n):
         for j in range(n):
             MI = MI + p[i, j]*np.log(p[i,j]/(p_I[i,0]*p_J[0,j]))
-    #------------------------------------------------------------------#
 
     return MI
 
@@ -282,7 +279,6 @@ def mutual_information_e(p):
     p_J = np.sum(p, axis=0)
     p_J = p_J.reshape(1, -1)
 
-    #------------------------------------------------------------------#
     un = np.unique(p)
     un = un[1:]
     
@@ -291,7 +287,6 @@ def mutual_information_e(p):
     jointentropy = -sum(un*np.log(un))
     
     MI = entropy1 + entropy2 - jointentropy
-    #------------------------------------------------------------------#
 
     return MI
 
@@ -308,7 +303,7 @@ def ngradient(fun, x, h=1e-3):
     # Output:
     # g - vector of partial derivatives (gradient) of fun
 
-    #------------------------------------------------------------------#
+
     g = []
     if len(x) == 1:
         g = (fun(x+h/2)-fun(x-h/2))/h
@@ -393,7 +388,6 @@ def affine_corr(I, Im, x):
     Im_t, Xt = image_transform(Im, Th)
     
     C = correlation(I, Im_t)
-    #------------------------------------------------------------------#
 
     return C, Im_t, Th
 
@@ -429,6 +423,5 @@ def affine_mi(I, Im, x):
     p = joint_histogram(I,Im_t)
     
     MI = mutual_information(p)
-    #------------------------------------------------------------------#
 
     return MI, Im_t, Th
