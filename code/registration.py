@@ -303,8 +303,6 @@ def ngradient(fun, x, h=1e-3):
     # Output:
     # g - vector of partial derivatives (gradient) of fun
 
-
-    g = []
     if len(x) == 1:
         g = (fun(x+h/2)-fun(x-h/2))/h
     else:
